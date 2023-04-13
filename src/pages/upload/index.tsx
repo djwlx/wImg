@@ -7,11 +7,9 @@ const UploadPage: FC = () => {
 
   return (
     <Box padding="16px 16px">
-      <Card height={40} padding="16px">
+      <Card padding="16px">
         <FileUpload />
-        <List>
-          <ListItem>content</ListItem>
-        </List>
+        <List></List>
       </Card>
     </Box>
   );

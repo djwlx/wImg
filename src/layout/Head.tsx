@@ -11,8 +11,14 @@ import {
   Spacer,
   Box,
   Icon,
+  Heading,
 } from "@chakra-ui/react";
-import { MoonIcon, SunIcon } from "@chakra-ui/icons";
+import {
+  ExternalLinkIcon,
+  MoonIcon,
+  SettingsIcon,
+  SunIcon,
+} from "@chakra-ui/icons";
 import React, { FC } from "react";
 import { Outlet } from "react-router-dom";
 import useUserInfo from "@/hooks/useUserInfo";
@@ -20,7 +26,7 @@ import useUserInfo from "@/hooks/useUserInfo";
 const Head: FC = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const user = useUserInfo();
-  console.log(user);
+
   return (
     <>
       <Card borderRadius="">
@@ -30,7 +36,9 @@ const Head: FC = () => {
           justifyContent="space-between"
           padding="0 24px"
         >
-          <Text>图床</Text>
+          <Heading as="h6" size="md">
+            图床
+          </Heading>
 
           <Flex alignItems="center">
             <Icon
@@ -47,8 +55,8 @@ const Head: FC = () => {
                 />
               </MenuButton>
               <MenuList>
-                <MenuItem>设置</MenuItem>
-                <MenuItem>退出</MenuItem>
+                <MenuItem icon={<SettingsIcon />}>设置</MenuItem>
+                <MenuItem icon={<ExternalLinkIcon />}>退出</MenuItem>
               </MenuList>
             </Menu>
           </Flex>
