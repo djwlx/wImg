@@ -14,6 +14,7 @@ import {
 import React, { FC, useRef, useState } from "react";
 import { getSizeLabelByByted, readFileAsDataURL } from "@/utils/file";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
+import axios from "axios";
 
 interface FileType {
   id: string;
@@ -75,6 +76,16 @@ const FileUpload: FC<FileUploadProps> = (props) => {
 
   // 单个图片上传
   const postFile = (file: FileType) => {
+    const formData = new FormData();
+    formData.append("file", file.file);
+    axios({
+      url: "http://localhost:3000/api/upload",
+      method: "post",
+      data: formData,
+      onUploadProgress(e) {
+        console.log(e);
+      },
+    });
     console.log(file, "upload");
   };
   //
