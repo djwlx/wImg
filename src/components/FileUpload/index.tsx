@@ -10,11 +10,13 @@ import {
   Flex,
   IconButton,
   ButtonGroup,
+  Progress,
 } from "@chakra-ui/react";
 import React, { FC, useRef, useState } from "react";
 import { getSizeLabelByByted, readFileAsDataURL } from "@/utils/file";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import axios from "axios";
+import { cloneDeep } from "lodash-es";
+import { upload } from "@/services/file";
 
 interface FileType {
   id: string;
@@ -23,6 +25,7 @@ interface FileType {
   size: number;
   dataUrl: string;
   status?: IMAGE_STATUS;
+  progress?: number;
 }
 
 interface FileUploadProps {}
@@ -53,13 +56,14 @@ const FileUpload: FC<FileUploadProps> = (props) => {
       size: file.size,
       status: IMAGE_STATUS.initial,
       dataUrl,
+      progress: 0,
     };
   };
 
   // 图片改变
   const onFileChange = async () => {
-    const fileList = [...(fileRef.current?.files as FileList)];
-    uploadFiles(fileList);
+    const fileListTemp = [...(fileRef.current?.files as FileList)];
+    uploadFiles(fileListTemp);
   };
 
   // 图片处理
@@ -68,9 +72,13 @@ const FileUpload: FC<FileUploadProps> = (props) => {
       return processFile(file);
     });
 
-    Promise.all(postFiles).then((fileList) => {
-      setFileList(fileList);
-      console.log();
+    Promise.all(postFiles).then((fileListTemp) => {
+      if (fileList.length === 0) {
+        setFileList(fileListTemp);
+      } else {
+        const fileListAll = [...fileList, ...fileListTemp];
+        setFileList(fileListAll);
+      }
     });
   };
 
@@ -78,20 +86,22 @@ const FileUpload: FC<FileUploadProps> = (props) => {
   const postFile = (file: FileType) => {
     const formData = new FormData();
     formData.append("file", file.file);
-    axios({
-      url: "http://localhost:3000/api/upload",
-      method: "post",
-      data: formData,
-      onUploadProgress(e) {
-        console.log(e);
+    const fileIndex = fileList?.findIndex((item) => item.id === file.id);
+
+    upload(formData, {
+      onUploadProgress: (e) => {
+        const { loaded, total = 0 } = e;
+        const fileListTmemp = cloneDeep(fileList);
+        fileListTmemp[fileIndex].progress = (loaded / total) * 100;
+        setFileList(fileListTmemp);
       },
     });
-    console.log(file, "upload");
   };
-  //
-  const editFile = (file: FileType) => {
-    console.log(file, "edit");
-  };
+
+  //图片编辑
+  // const editFile = (file: FileType) => {
+  //   console.log(file, "edit");
+  // };
 
   const deleteFile = (id: string) => {
     const newFileList = fileList.filter((item) => item.id !== id);
@@ -140,13 +150,13 @@ const FileUpload: FC<FileUploadProps> = (props) => {
                     </Box>
                   </Flex>
                   <ButtonGroup gap={1}>
-                    <IconButton
+                    {/* <IconButton
                       colorScheme="teal"
                       aria-label="Search database"
                       icon={<EditIcon />}
                       fontSize="12px"
                       size={"sm"}
-                    />
+                    /> */}
                     <IconButton
                       colorScheme="red"
                       aria-label="Search database"
@@ -165,6 +175,12 @@ const FileUpload: FC<FileUploadProps> = (props) => {
                     />
                   </ButtonGroup>
                 </Flex>
+                <Progress
+                  colorScheme="green"
+                  size="sm"
+                  marginTop={1}
+                  value={item.progress}
+                />
               </ListItem>
             );
           })}
