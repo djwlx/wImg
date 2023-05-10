@@ -6,10 +6,7 @@ import {
   MenuButton,
   MenuItem,
   MenuList,
-  Text,
   useColorMode,
-  Spacer,
-  Box,
   Icon,
   Heading,
 } from "@chakra-ui/react";
@@ -20,12 +17,17 @@ import {
   SunIcon,
 } from "@chakra-ui/icons";
 import React, { FC } from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import useUserInfo from "@/hooks/useUserInfo";
 
 const Head: FC = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const user = useUserInfo();
+  const navigate = useNavigate();
+
+  const logOut = () => {
+    navigate("/login");
+  };
 
   return (
     <>
@@ -56,7 +58,9 @@ const Head: FC = () => {
               </MenuButton>
               <MenuList>
                 <MenuItem icon={<SettingsIcon />}>设置</MenuItem>
-                <MenuItem icon={<ExternalLinkIcon />}>退出</MenuItem>
+                <MenuItem icon={<ExternalLinkIcon />} onClick={logOut}>
+                  退出
+                </MenuItem>
               </MenuList>
             </Menu>
           </Flex>
