@@ -39,16 +39,20 @@ enum IMAGE_STATUS {
 
 const FileUpload: FC<FileUploadProps> = (props) => {
   const {} = props;
-
   const textColor = useColorModeValue("grey", "white");
   const fileRef = useRef<HTMLInputElement | null>(null);
   const [fileList, setFileList] = useState<FileType[]>([]);
   const [parent] = useAutoAnimate();
 
+  // 图片改变
+  const onFileChange = async () => {
+    const fileListTemp = [...(fileRef.current?.files as FileList)];
+    uploadFiles(fileListTemp);
+  };
+
   // 图片格式化
   const processFile = async (file: File) => {
     const dataUrl = await readFileAsDataURL(file);
-
     return {
       id: Math.random().toString(),
       file: file,
@@ -58,12 +62,6 @@ const FileUpload: FC<FileUploadProps> = (props) => {
       dataUrl,
       progress: 0,
     };
-  };
-
-  // 图片改变
-  const onFileChange = async () => {
-    const fileListTemp = [...(fileRef.current?.files as FileList)];
-    uploadFiles(fileListTemp);
   };
 
   // 图片处理
@@ -87,7 +85,6 @@ const FileUpload: FC<FileUploadProps> = (props) => {
     const formData = new FormData();
     formData.append("file", file.file);
     const fileIndex = fileList?.findIndex((item) => item.id === file.id);
-
     upload(formData, {
       onUploadProgress: (e) => {
         const { loaded, total = 0 } = e;

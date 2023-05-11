@@ -1,5 +1,5 @@
 import { FC } from "react";
-import FileUpload from "@/components/FileUpload";
+import FileUpload from "./FileUpload";
 import { Box, Card } from "@chakra-ui/react";
 
 const UploadPage: FC = () => {
