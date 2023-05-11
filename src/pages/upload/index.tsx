@@ -1,6 +1,6 @@
-import { FC, useState } from "react";
+import { FC } from "react";
 import FileUpload from "@/components/FileUpload";
-import { Box, List, ListItem, Card } from "@chakra-ui/react";
+import { Box, Card } from "@chakra-ui/react";
 
 const UploadPage: FC = () => {
   return (
