@@ -24,7 +24,6 @@ const Head: FC = () => {
   const { colorMode, toggleColorMode } = useColorMode();
   const user = useUserInfo();
   const navigate = useNavigate();
-
   const logOut = () => {
     navigate("/login");
   };
