@@ -27,3 +27,20 @@ export const getSizeLabelByByted = (size: number) => {
 
   return size + "B";
 };
+
+export const transArrayToObj = (
+  array: any[],
+  param: {
+    key: string;
+    value: any;
+  }
+) => {
+  const { key, value } = param as any;
+  const result: any = {};
+  array.forEach((item) => {
+    const objKey = item[key];
+    result[objKey] = value;
+  });
+
+  return result;
+};

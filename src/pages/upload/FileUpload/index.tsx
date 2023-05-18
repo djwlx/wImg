@@ -10,12 +10,12 @@ import {
   Flex,
   IconButton,
   ButtonGroup,
-  Progress,
+  Stack,
+  Badge,
 } from "@chakra-ui/react";
 import React, { FC, useRef, useState } from "react";
 import { getSizeLabelByByted, readFileAsDataURL } from "@/utils/file";
 import { useAutoAnimate } from "@formkit/auto-animate/react";
-import { cloneDeep } from "lodash-es";
 import { upload } from "@/services/file";
 
 interface FileType {
@@ -25,7 +25,6 @@ interface FileType {
   size: number;
   dataUrl: string;
   status?: IMAGE_STATUS;
-  progress?: number;
 }
 
 interface FileUploadProps {}
@@ -40,7 +39,7 @@ enum IMAGE_STATUS {
 const FileUpload: FC<FileUploadProps> = (props) => {
   const {} = props;
   const textColor = useColorModeValue("grey", "white");
-  const fileRef = useRef<HTMLInputElement | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
   const [fileList, setFileList] = useState<FileType[]>([]);
   const [parent] = useAutoAnimate();
 
@@ -50,7 +49,7 @@ const FileUpload: FC<FileUploadProps> = (props) => {
     uploadFiles(fileListTemp);
   };
 
-  // 图片格式化
+  // 对单条的图片的处理
   const processFile = async (file: File) => {
     const dataUrl = await readFileAsDataURL(file);
     return {
@@ -60,11 +59,10 @@ const FileUpload: FC<FileUploadProps> = (props) => {
       size: file.size,
       status: IMAGE_STATUS.initial,
       dataUrl,
-      progress: 0,
     };
   };
 
-  // 图片处理
+  // 上传前的处理
   const uploadFiles = (files: File[]) => {
     const postFiles = files.map((file) => {
       return processFile(file);
@@ -81,21 +79,24 @@ const FileUpload: FC<FileUploadProps> = (props) => {
   };
 
   // 单个图片上传
-  const postFile = (file: FileType) => {
+  const postFile = async (file: FileType) => {
     const formData = new FormData();
     formData.append("file", file.file);
-    const fileIndex = fileList?.findIndex((item) => item.id === file.id);
-    upload(formData, {
-      onUploadProgress: (e) => {
-        const { loaded, total = 0 } = e;
-        const fileListTmemp = cloneDeep(fileList);
-        fileListTmemp[fileIndex].progress = (loaded / total) * 100;
-        setFileList(fileListTmemp);
-      },
-    });
+    const fileListTemp = [...fileList];
+    const index = fileListTemp.findIndex((item) => item.id === file.id);
+    fileListTemp[index].status = IMAGE_STATUS.pending;
+    setFileList(fileListTemp);
+    const result = await upload(formData);
+    if (result.status === 200) {
+      fileListTemp[index].status = IMAGE_STATUS.success;
+      setFileList(fileListTemp);
+    } else {
+      fileListTemp[index].status = IMAGE_STATUS.error;
+      setFileList(fileListTemp);
+    }
   };
 
-  //图片编辑
+  //编辑
   // const editFile = (file: FileType) => {
   //   console.log(file, "edit");
   // };
@@ -105,6 +106,12 @@ const FileUpload: FC<FileUploadProps> = (props) => {
     setFileList(newFileList);
   };
 
+  const uploadAll = () => {
+    fileList.forEach((item) => {
+      postFile(item);
+    });
+  };
+
   return (
     <Box>
       <span>
@@ -112,17 +119,23 @@ const FileUpload: FC<FileUploadProps> = (props) => {
           ref={fileRef}
           type="file"
           multiple
+          value=""
           style={{ display: "none" }}
           onClick={(e) => e.stopPropagation()}
           onChange={onFileChange}
         />
 
-        <Button
-          leftIcon={<TriangleUpIcon />}
-          onClick={() => fileRef.current?.click()}
-        >
-          上传图片
-        </Button>
+        <Stack>
+          <Button
+            leftIcon={<TriangleUpIcon />}
+            onClick={() => fileRef.current?.click()}
+          >
+            上传图片
+          </Button>
+          <Button leftIcon={<TriangleUpIcon />} onClick={uploadAll}>
+            上传全部
+          </Button>
+        </Stack>
       </span>
       <Box borderRadius="3px" marginTop="16px">
         <List spacing={2} ref={parent}>
@@ -132,7 +145,7 @@ const FileUpload: FC<FileUploadProps> = (props) => {
                 <Flex alignItems="center" justifyContent="space-between">
                   <Flex alignItems="center">
                     <Image
-                      boxSize="50px"
+                      boxSize="66px"
                       objectFit="cover"
                       src={item.dataUrl}
                       alt={item.name}
@@ -141,19 +154,38 @@ const FileUpload: FC<FileUploadProps> = (props) => {
                       <Text color={textColor} fontSize="sm">
                         {item.name}
                       </Text>
+                      {item.status === IMAGE_STATUS.success && (
+                        <Badge variant="solid" colorScheme="green">
+                          Success
+                        </Badge>
+                      )}
+                      {item.status === IMAGE_STATUS.pending && (
+                        <Badge variant="solid" colorScheme="yellow">
+                          Pending
+                        </Badge>
+                      )}
+                      {item.status === IMAGE_STATUS.error && (
+                        <Badge variant="solid" colorScheme="red">
+                          Error
+                        </Badge>
+                      )}
+                      {item.status === IMAGE_STATUS.initial && (
+                        <Badge>Initial</Badge>
+                      )}
+
                       <Text color={textColor} fontSize="sm">
                         {getSizeLabelByByted(item.size)}
                       </Text>
                     </Box>
                   </Flex>
                   <ButtonGroup gap={1}>
-                    {/* <IconButton
+                    <IconButton
                       colorScheme="teal"
                       aria-label="Search database"
                       icon={<EditIcon />}
                       fontSize="12px"
                       size={"sm"}
-                    /> */}
+                    />
                     <IconButton
                       colorScheme="red"
                       aria-label="Search database"
@@ -168,16 +200,17 @@ const FileUpload: FC<FileUploadProps> = (props) => {
                       icon={<TriangleUpIcon />}
                       fontSize="12px"
                       size={"sm"}
+                      isDisabled={item.status === IMAGE_STATUS.success}
                       onClick={() => postFile(item)}
                     />
                   </ButtonGroup>
                 </Flex>
-                <Progress
+                {/* <Progress
                   colorScheme="green"
                   size="sm"
                   marginTop={1}
                   value={item.progress}
-                />
+                /> */}
               </ListItem>
             );
           })}
