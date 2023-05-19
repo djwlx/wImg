@@ -1,6 +1,11 @@
 .login {
   width: 100vw;
   height: 100vh;
-  background-image: url("../../../public/login_background.jpg");
-  background-size: cover;
+  background-color: #cad3e2;
+  // background-image: url("../../../public/login_background.jpg");
+  // background-size: cover;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
 }

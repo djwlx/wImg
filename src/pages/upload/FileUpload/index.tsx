@@ -85,15 +85,13 @@ const FileUpload: FC<FileUploadProps> = (props) => {
     const fileListTemp = [...fileList];
     const index = fileListTemp.findIndex((item) => item.id === file.id);
     fileListTemp[index].status = IMAGE_STATUS.pending;
-    setFileList(fileListTemp);
     const result = await upload(formData);
     if (result.status === 200) {
       fileListTemp[index].status = IMAGE_STATUS.success;
-      setFileList(fileListTemp);
     } else {
       fileListTemp[index].status = IMAGE_STATUS.error;
-      setFileList(fileListTemp);
     }
+    setFileList(fileListTemp);
   };
 
   //编辑
@@ -179,13 +177,13 @@ const FileUpload: FC<FileUploadProps> = (props) => {
                     </Box>
                   </Flex>
                   <ButtonGroup gap={1}>
-                    <IconButton
+                    {/* <IconButton
                       colorScheme="teal"
                       aria-label="Search database"
                       icon={<EditIcon />}
                       fontSize="12px"
                       size={"sm"}
-                    />
+                    /> */}
                     <IconButton
                       colorScheme="red"
                       aria-label="Search database"
