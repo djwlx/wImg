@@ -1,5 +1,5 @@
-import React, { FC, useState } from "react";
-import styles from "./index.module.scss";
+import React, { FC, useState } from 'react';
+import styles from './index.module.scss';
 import {
   Card,
   CardBody,
@@ -13,18 +13,18 @@ import {
   Button,
   Checkbox,
   useToast,
-} from "@chakra-ui/react";
-import useLocalStorage from "@/hooks/useLocalStorage";
-import { login as loginRequest } from "@/services/user";
-import { useNavigate } from "react-router-dom";
-import { Formik, Field, Form } from "formik";
+} from '@chakra-ui/react';
+import useLocalStorage from '@/hooks/useLocalStorage';
+import { login as loginRequest } from '@/services/user';
+import { useNavigate } from 'react-router-dom';
+import { Formik, Field, Form } from 'formik';
 
 const Login: FC = () => {
   const toast = useToast();
   const { set } = useLocalStorage();
   const navigate = useNavigate();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
   const [isRemember, setIsRemember] = useState<boolean>(false);
 
   const login = (values: any) => {
@@ -32,20 +32,20 @@ const Login: FC = () => {
       const { data } = res;
       if (data.code === 0) {
         toast({
-          title: "Login Success.",
+          title: 'Login Success.',
           // description: "We've created your account for you.",
-          status: "success",
-          position: "top",
+          status: 'success',
+          position: 'top',
           duration: 1500,
         });
-        set("token", data.data.token);
-        navigate("/");
+        set('token', data.data.token);
+        navigate('/');
       } else {
         toast({
-          title: "Login Fail.",
+          title: 'Login Fail.',
           description: data.message,
-          status: "error",
-          position: "top",
+          status: 'error',
+          position: 'top',
           duration: 1500,
         });
       }
@@ -53,10 +53,10 @@ const Login: FC = () => {
   };
 
   const isRequired = (value: string) => {
-    if (value === "") {
-      return "必填";
+    if (value === '') {
+      return '必填';
     } else {
-      return "";
+      return '';
     }
   };
 
@@ -65,10 +65,10 @@ const Login: FC = () => {
       <Text fontSize="4xl" color="#F0F8FF">
         登录
       </Text>
-      <Card width={"30%"} minWidth={300}>
+      <Card width={'30%'} minWidth={300}>
         <CardBody padding={8}>
           <Formik
-            initialValues={{ email: "", password: "" }}
+            initialValues={{ email: '', password: '' }}
             onSubmit={(values, actions) => {
               login(values);
             }}
@@ -77,7 +77,7 @@ const Login: FC = () => {
               <Form>
                 <Stack spacing={6}>
                   <Field name="email" validate={isRequired}>
-                    {({ field, form }) => (
+                    {({ field, form }: any) => (
                       <FormControl isInvalid={form.errors.email}>
                         <FormLabel>Email address</FormLabel>
                         <Input {...field} autoComplete="emailq" />
@@ -87,29 +87,16 @@ const Login: FC = () => {
                   </Field>
 
                   <Field name="password" validate={isRequired}>
-                    {({ field, form }) => (
-                      <FormControl
-                        isInvalid={
-                          form.errors.password && form.touched.password
-                        }
-                      >
+                    {({ field, form }: any) => (
+                      <FormControl isInvalid={form.errors.password && form.touched.password}>
                         <FormLabel>PassWord</FormLabel>
-                        <Input
-                          {...field}
-                          type="password"
-                          autoComplete="current-password"
-                        />
-                        <FormErrorMessage>
-                          {form.errors.password}
-                        </FormErrorMessage>
+                        <Input {...field} type="password" autoComplete="current-password" />
+                        <FormErrorMessage>{form.errors.password}</FormErrorMessage>
                       </FormControl>
                     )}
                   </Field>
 
-                  <Checkbox
-                    isChecked={isRemember}
-                    onChange={(e) => setIsRemember(e.target.checked)}
-                  >
+                  <Checkbox isChecked={isRemember} onChange={(e) => setIsRemember(e.target.checked)}>
                     Remember Me
                   </Checkbox>
                   <Button colorScheme="teal" size="lg" type="submit">
