@@ -1,7 +1,6 @@
 import { FC } from 'react';
 import FileUpload from './FileUpload';
 import { Box, Card, Link } from '@chakra-ui/react';
-import Youpaiyun from '../../../public/又拍云_logo8.svg';
 
 const UploadPage: FC = () => {
   return (
@@ -23,7 +22,7 @@ const UploadPage: FC = () => {
         href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"
       >
         <span>本网站由</span>
-        <img style={{ height: 100, marginTop: 20 }} src="../../../public/又拍云_logo8.svg"></img>
+        <img style={{ height: 100, marginTop: 20 }} src="../../../public/youpaiyun.svg"></img>
         <span>提供CDN加速/云储存服务</span>
       </Link>
     </Box>
