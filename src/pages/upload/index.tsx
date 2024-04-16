@@ -22,7 +22,10 @@ const UploadPage: FC = () => {
         href="https://www.upyun.com/?utm_source=lianmeng&utm_medium=referral"
       >
         <span>本网站由</span>
-        <img style={{ height: 100, marginTop: 20 }} src="../../../public/youpaiyun.svg"></img>
+        <img
+          style={{ height: 100, marginTop: 20 }}
+          src="https://img.djwl.top/icon/%E5%8F%88%E6%8B%8D%E4%BA%91_logo8.svg"
+        ></img>
         <span>提供CDN加速/云储存服务</span>
       </Link>
     </Box>
